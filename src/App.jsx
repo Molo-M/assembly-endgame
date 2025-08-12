@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import './index.css'
+import clsx from "clsx";
+
 
 export default function App() {
   // An array of our chips 
@@ -24,10 +26,42 @@ export default function App() {
 
   // Alphabet to store letters 
   const alphabet = "qwertyuiopasdfghjklzxcvbnm"
+
+  // Array to store user's guessed letters
+  const [guessedLetter, setGuessedLetter] = useState([])
+  // Function to store letter and color results in array
+  function saveLetter(value) {
+    setGuessedLetter(prevItem =>
+      prevItem.includes(value) ? prevItem :
+      [...prevItem, value]
+    )
+  }
+
   //Map over alphabet to render it below
-  const keyboard = [...alphabet].map(item => 
-    <button key={item} className="py-1 px-3 cursor-pointer bg-yellow-300 hover:bg-yellow-500 text-black">{item.toUpperCase()}</button>
-  )
+  const keyboard = [...alphabet].map(item => {
+    const letter = item.toUpperCase();
+    const isGuessedCorrect =
+      guessedLetter.includes(letter) && currentWord.toUpperCase().includes(letter);
+    const isGuessedWrong =
+      guessedLetter.includes(letter) && !currentWord.toUpperCase().includes(letter);
+
+    return ( 
+      <button 
+        onClick={() => saveLetter(letter)} 
+        key={item} 
+        className={clsx(
+          "keyboard py-1 px-3 cursor-pointer text-black",
+          !guessedLetter.includes(letter) && "bg-yellow-400 hover:bg-yellow-500",
+          isGuessedCorrect && "bg-green-500 hover:bg-green-600",
+          isGuessedWrong && "bg-red-500 hover:bg-red-600"
+        )}
+      >
+        {letter}
+      </button>
+    );
+  });
+
+
   return (
     <>
     <main className="bg-black text-white px-5 py-8 flex flex-col gap-10 items-center">
