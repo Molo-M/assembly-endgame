@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './index.css'
 import clsx from "clsx";
+import { getFarewellText } from './utils';
 
 
 export default function App() {
@@ -28,10 +29,13 @@ export default function App() {
 
   // Variable to store the number of wrong guesses
   let wrongGuessCount = guessedLetter.filter(item => ![...currentWord].includes(item.toLowerCase()))
+  
+  // Variable to store current guessed letter
+  const currentGuess = guessedLetter[guessedLetter.length -1]
+
 
   // Map over our chips to render the languages
   const language = chips.map((item, index) => {
-    // const 
     return (
       <div 
         key={item.name} 
@@ -91,7 +95,7 @@ export default function App() {
   )})
 
   // Create variables to determine game winning conditions
-  const isGameLost = wrongGuessCount.length >= chips.length
+  const isGameLost = wrongGuessCount.length >= chips.length - 1
   const isGameWon = [...currentWord].every(item => guessedLetter.includes(item.toUpperCase()))
   const isGameOver = isGameLost || isGameWon
 
@@ -102,13 +106,30 @@ export default function App() {
         <h1 className="text-2xl">Assembly: Endgame</h1>
         <p className="text-gray-400">Guess the word in under 8 attempts to keep the programming world safe from Assembly!</p>
       </header>
-      <section id="status" className="bg-green-700 text-center py-5 rounded-xl w-full">
+      {/* Game status display, depending on game conditions */}
+      {isGameWon && <section className="status bg-green-700">
         <h1 className="text-xl font-semibold">You win!</h1>
         <p>Well done!</p>
-      </section>
+      </section>}
+      {isGameLost && <section className="status bg-red-700">
+        <h1 className="text-xl font-semibold">Game over!</h1>
+        <p>You lose! Better start learning assembly.</p>
+      </section>}
+      {/* If game is not over  */}
+      {!isGameOver && <section className="w-full">
+        {/* When you make a mistake */}
+        { guessedLetter.length > 0 && !currentWord.includes(currentGuess.toLowerCase()) ? 
+        <div className="status bg-purple-700">
+          <h1>{getFarewellText(chips[wrongGuessCount.length - 1].name)}</h1>
+        </div> : 
+        // When you don't make a mistake
+        <div className="status"></div>}
+        </section>}
+      {/* Chips section to show the programming languages to save  */}
       <section id="chips" className="flex flex-wrap gap-1 justify-center">
         {language}
       </section>
+      {/* section to show the game word  */}
       <section id="word" className="flex gap-1 text-2xl justify-center">
         {gameWord}
       </section>
