@@ -2,6 +2,6 @@
 
 @layer components {
     .status {
-        @apply text-center rounded-xl w-full h-20 flex flex-col justify-center;
+        @apply text-center rounded-xl w-full sm:w-[60%] h-20 flex flex-col justify-center;
     }
 }

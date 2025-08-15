@@ -129,7 +129,7 @@ export default function App() {
         <p>You lose! Better start learning assembly.</p>
       </section>}
       {/* If game is not over  */}
-      {!isGameOver && <section className="w-full">
+      {!isGameOver && <section className="w-full flex justify-center">
         {/* When you make a mistake */}
         { guessedLetter.length > 0 && !currentWord.includes(currentGuess.toLowerCase()) ? 
         <div className="status bg-purple-700">
@@ -146,7 +146,7 @@ export default function App() {
       <section id="word" className="flex gap-1 text-2xl justify-center">
         {gameWord}
       </section>
-      <section id="alphabet" className="flex flex-wrap gap-1 justify-center w-94">
+      <section id="alphabet" className="flex flex-wrap gap-1 justify-center w-87 sm:w-94">
         {keyboard}
       </section>
       {isGameOver && 
