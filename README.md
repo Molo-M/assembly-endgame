@@ -115,7 +115,7 @@ To deploy:
 ## Live Demo
 
 You can try the game here:
-[**Play Assembly: Endgame**](YOUR_PROJECT_LINK)
+[**Play Assembly: Endgame**](https://molo-m.github.io/assembly-endgame/)
 
 ---
 
