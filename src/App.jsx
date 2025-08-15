@@ -2,7 +2,8 @@ import { useState } from 'react'
 import './index.css'
 import clsx from "clsx";
 import { getFarewellText } from './utils';
-
+import { getRandomWord } from './utils';
+import Confetti from 'react-confetti';
 
 export default function App() {
   // An array of our chips 
@@ -19,7 +20,7 @@ export default function App() {
   ]
 
   // Create state to save our current word
-  const [currentWord, setCurrentWord] = useState("react")
+  const [currentWord, setCurrentWord] = useState(() => getRandomWord())
 
   // Alphabet to store letters 
   const alphabet = "qwertyuiopasdfghjklzxcvbnm"
@@ -56,6 +57,26 @@ export default function App() {
     )
   }
 
+  // Create variables to determine game winning conditions
+  const isGameLost = wrongGuessCount.length >= chips.length
+  const isGameWon = [...currentWord].every(item => guessedLetter.includes(item.toUpperCase()))
+  const isGameOver = isGameLost || isGameWon
+
+  // Map over game word and check if it was guessed
+  const gameWord = [...currentWord].map((item, index) => {
+    const correctMatch = guessedLetter.includes(item.toUpperCase())
+    return (
+      <div 
+        key={index} 
+        className={clsx(
+            "border-b bg-gray-800 px-3 py-1",
+            correctMatch && "text-white",
+            (!correctMatch && !isGameLost) && "text-gray-800",
+            (!correctMatch && isGameLost) && "text-red-500"
+            )}>
+          {item.toUpperCase()}</div>
+  )})
+
   //Map over alphabet to render it below
   const keyboard = [...alphabet].map(item => {
     const letter = item.toUpperCase();
@@ -67,6 +88,9 @@ export default function App() {
     return ( 
       <button 
         onClick={() => saveLetter(letter)} 
+        disabled={isGameOver ? true: false}
+        aria-disabled={guessedLetter.includes(letter)}
+        aria-label={`Letter ${letter}`}
         key={item} 
         className={clsx(
           "py-1 px-3 cursor-pointer text-black",
@@ -80,28 +104,17 @@ export default function App() {
     );
   });
 
-  // Map over game word and check if it was guessed
-  const gameWord = [...currentWord].map((item, index) => {
-    const correctMatch = guessedLetter.includes(item.toUpperCase())
-    return (
-      <div 
-        key={index} 
-        className={clsx(
-            "border-b bg-gray-800 px-3 py-1",
-            correctMatch && "text-white",
-            !correctMatch && "text-gray-800"
-            )}>
-          {item.toUpperCase()}</div>
-  )})
-
-  // Create variables to determine game winning conditions
-  const isGameLost = wrongGuessCount.length >= chips.length - 1
-  const isGameWon = [...currentWord].every(item => guessedLetter.includes(item.toUpperCase()))
-  const isGameOver = isGameLost || isGameWon
+  // Function start a new game (reset)
+  function reset() {
+    setCurrentWord(getRandomWord())
+    setGuessedLetter([])
+  }
 
   return (
     <>
     <main className="bg-black text-white px-5 h-screen py-3 flex flex-col gap-5 items-center">
+      {/* If game is won completely */}
+      {isGameWon && <Confetti />}
       <header className="text-center flex flex-col gap-5">
         <h1 className="text-2xl">Assembly: Endgame</h1>
         <p className="text-gray-400">Guess the word in under 8 attempts to keep the programming world safe from Assembly!</p>
@@ -136,7 +149,11 @@ export default function App() {
       <section id="alphabet" className="flex flex-wrap gap-1 justify-center w-94">
         {keyboard}
       </section>
-      {isGameOver && <button className="py-1 w-50 bg-sky-700 hover:bg-sky-900 cursor-pointer font-semibold text-xl">New Game</button>}
+      {isGameOver && 
+      <button 
+      onClick={reset}
+      className="py-1 w-50 bg-sky-700 hover:bg-sky-900 cursor-pointer font-semibold text-xl">
+        New Game</button>}
     </main>
     </>
   )
